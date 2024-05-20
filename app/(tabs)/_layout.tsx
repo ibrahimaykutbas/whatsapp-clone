@@ -40,6 +40,7 @@ const Layout = () => {
           name="calls"
           options={{
             title: "Calls",
+            headerShown: false,
             tabBarIcon: ({ color, size }) => (
               <MaterialIcons name="phone" size={size} color={color} />
             ),
