@@ -1,12 +1,87 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Linking,
+} from "react-native";
+import React from "react";
+
+import welcomeImage from "@/assets/images/welcome.png";
+import Colors from "@/constants/Colors";
+
+import { Link } from "expo-router";
+
+const welcome_Image = Image.resolveAssetSource(welcomeImage).uri;
 
 const Page = () => {
-    return (
-        <View>
-            <Text>FIRST PAGE</Text>
-        </View>
-    )
-}
+  const openLink = () => {
+    Linking.openURL("https://www.whatsapp.com/legal/privacy-policy-eea");
+  };
 
-export default Page
+  return (
+    <View style={styles.container}>
+      <Image source={{ uri: welcome_Image }} style={styles.welcome} />
+      <Text style={styles.headline}>Welcome to WhatsAp Clone</Text>
+
+      <Text style={styles.description}>
+        Read our{" "}
+        <Text style={styles.link} onPress={openLink}>
+          Privacy Policy
+        </Text>
+        . {'Tap "Agree & continue" to accept the '}
+        <Text style={styles.link} onPress={openLink}>
+          Terms of Service
+        </Text>
+        .
+      </Text>
+
+      {/* Replace ile bir önceki ekrana dönüş engelleniyor */}
+      <Link href="/otp" replace asChild>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Agree & Continue</Text>
+        </TouchableOpacity>
+      </Link>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
+  },
+  welcome: {
+    width: "100%",
+    height: 300,
+    marginBottom: 80,
+  },
+  headline: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginVertical: 20,
+  },
+  description: {
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: 80,
+    color: Colors.gray,
+  },
+  link: {
+    color: Colors.primary,
+  },
+  button: {
+    width: "100%",
+    alignItems: "center",
+  },
+  buttonText: {
+    fontSize: 22,
+    color: Colors.primary,
+    fontWeight: "bold",
+  },
+});
+export default Page;
