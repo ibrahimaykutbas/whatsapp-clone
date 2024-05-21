@@ -15,7 +15,7 @@ import { Link } from "expo-router";
 
 const welcome_Image = Image.resolveAssetSource(welcomeImage).uri;
 
-const Page = () => {
+const Launch = () => {
   const openLink = () => {
     Linking.openURL("https://www.whatsapp.com/legal/privacy-policy-eea");
   };
@@ -84,4 +84,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-export default Page;
+export default Launch;

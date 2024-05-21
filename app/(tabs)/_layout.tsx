@@ -61,6 +61,7 @@ const Layout = () => {
           name="chats"
           options={{
             title: "Chats",
+            headerShown: false,
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="chatbubbles" size={size} color={color} />
             ),

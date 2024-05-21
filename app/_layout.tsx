@@ -74,7 +74,7 @@ const InitialLayout = () => {
     console.log("isSignedIn changed", isSignedIn);
 
     if (isSignedIn && !inTabsGroup) {
-      router.replace("/(tabs)/calls");
+      router.replace("/(tabs)/chats");
     } else if (!isSignedIn) {
       router.replace("/");
     }
