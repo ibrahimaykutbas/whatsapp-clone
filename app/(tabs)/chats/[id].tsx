@@ -1,5 +1,5 @@
 import { View, Text, ImageBackground, StyleSheet } from "react-native";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 
 import Colors from "@/constants/Colors";
 
@@ -18,11 +18,19 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Ionicons } from "@expo/vector-icons";
 
+import { Swipeable } from "react-native-gesture-handler";
+
+import ChatMessageBox from "@/components/ChatMessageBox";
+import ReplyMessageBar from "@/components/ReplyMessageBar";
+
 const Chat = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
+  const [replyMessage, setReplyMessage] = useState<IMessage | null>(null);
   const [text, setText] = useState("");
 
   const insets = useSafeAreaInsets();
+
+  const swipeableRowRef = useRef<Swipeable | null>(null);
 
   useEffect(() => {
     setMessages([
@@ -55,6 +63,26 @@ const Chat = () => {
       GiftedChat.append(previousMessages, messages)
     );
   }, []);
+
+  const updateRowRef = useCallback(
+    (ref: any) => {
+      if (
+        ref &&
+        replyMessage &&
+        ref.props.children.props.currentMessage?._id === replyMessage._id
+      ) {
+        swipeableRowRef.current = ref;
+      }
+    },
+    [replyMessage]
+  );
+
+  useEffect(() => {
+    if (replyMessage && swipeableRowRef.current) {
+      swipeableRowRef.current.close();
+      swipeableRowRef.current = null;
+    }
+  }, [replyMessage]);
 
   return (
     <ImageBackground
@@ -148,6 +176,19 @@ const Chat = () => {
                 <Ionicons name="add" color={Colors.primary} size={28} />
               </View>
             )}
+          />
+        )}
+        renderMessage={(props) => (
+          <ChatMessageBox
+            {...props}
+            setReplyOnSwipeOpen={setReplyMessage}
+            updateRowRef={updateRowRef}
+          />
+        )}
+        renderChatFooter={() => (
+          <ReplyMessageBar
+            clearReply={() => setReplyMessage(null)}
+            message={replyMessage}
           />
         )}
       />
