@@ -4,13 +4,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  FlatList,
   Image,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 
 import Colors from "@/constants/Colors";
-
 import { defaultStyles } from "@/constants/Styles";
 
 import { Stack } from "expo-router";
@@ -20,25 +18,40 @@ import calls from "@/assets/data/calls.json";
 import { Ionicons } from "@expo/vector-icons";
 
 import { format } from "date-fns";
-import { SegmentedControl } from "@/components/SegmentedControl";
 
+import { SegmentedControl } from "@/components/SegmentedControl";
 import { Options } from "@/components/SegmentedControl";
+import SwipeableRow from "@/components/SwipeableRow";
 
 import Animated, {
   CurvedTransition,
   FadeInUp,
   FadeOutUp,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
 } from "react-native-reanimated";
 
-const transition = CurvedTransition.delay(5);
+import * as Haptics from "expo-haptics";
+
+const transition = CurvedTransition.delay(100);
+
+const AnimatedTouchableOpacity =
+  Animated.createAnimatedComponent(TouchableOpacity);
 
 const Calls = () => {
   const [items, setItems] = useState(calls);
   const [isEditting, setIsEditting] = useState(false);
   const [selectedOption, setSelectedOption] = useState<Options>("All");
 
+  const editing = useSharedValue(-30);
+
   const onEdit = () => {
-    setIsEditting((prev) => !prev);
+    const editingNew = !isEditting;
+
+    editing.value = editingNew ? 0 : -30;
+
+    setIsEditting(editingNew);
   };
 
   useEffect(() => {
@@ -49,48 +62,14 @@ const Calls = () => {
     }
   }, [selectedOption]);
 
-  const RenderItem = ({ item, index }: any) => (
-    <Animated.View entering={FadeInUp.delay(index * 1)} exiting={FadeOutUp}>
-      <View style={[defaultStyles.item]}>
-        <Image source={{ uri: item.img }} style={styles.avatar} />
-        <View style={{ flex: 1, gap: 2 }}>
-          <Text
-            style={{ fontSize: 18, color: item.missed ? Colors.red : "#000" }}
-          >
-            {item.name}
-          </Text>
+  const removeCall = (item: any) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setItems(items.filter((i) => i.id !== item.id));
+  };
 
-          <View style={{ flexDirection: "row", gap: 4 }}>
-            <Ionicons
-              name={item.video ? "videocam" : "call"}
-              size={16}
-              color={Colors.gray}
-            />
-            <Text style={{ flex: 1, color: Colors.gray }}>
-              {item?.incoming ? "Incoming" : "Outgoing"}
-            </Text>
-          </View>
-        </View>
-
-        <View
-          style={{
-            flexDirection: "row",
-            gap: 6,
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ color: Colors.gray }}>
-            {format(item.date, "MM.dd.yy")}
-          </Text>
-          <Ionicons
-            name="information-circle-outline"
-            size={24}
-            color={Colors.primary}
-          />
-        </View>
-      </View>
-    </Animated.View>
-  );
+  const animatedRowStyles = useAnimatedStyle(() => ({
+    transform: [{ translateX: withTiming(editing.value) }],
+  }));
 
   return (
     <View style={styles.container}>
@@ -121,7 +100,75 @@ const Calls = () => {
           <Animated.FlatList
             data={items}
             renderItem={({ item, index }) => (
-              <RenderItem item={item} index={index} />
+              <SwipeableRow onDelete={() => removeCall(item)}>
+                <Animated.View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                  entering={FadeInUp.delay(index * 20)}
+                  exiting={FadeOutUp}
+                >
+                  <AnimatedTouchableOpacity
+                    onPress={() => removeCall(item)}
+                    style={[animatedRowStyles, { paddingLeft: 8 }]}
+                  >
+                    <Ionicons
+                      name="remove-circle"
+                      size={24}
+                      color={Colors.red}
+                    />
+                  </AnimatedTouchableOpacity>
+
+                  <Animated.View
+                    style={[
+                      defaultStyles.item,
+                      animatedRowStyles,
+                      { paddingLeft: 10 },
+                    ]}
+                  >
+                    <Image source={{ uri: item.img }} style={styles.avatar} />
+                    <View style={{ flex: 1, gap: 2 }}>
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          color: item.missed ? Colors.red : "#000",
+                        }}
+                      >
+                        {item.name}
+                      </Text>
+
+                      <View style={{ flexDirection: "row", gap: 4 }}>
+                        <Ionicons
+                          name={item.video ? "videocam" : "call"}
+                          size={16}
+                          color={Colors.gray}
+                        />
+                        <Text style={{ flex: 1, color: Colors.gray }}>
+                          {item?.incoming ? "Incoming" : "Outgoing"}
+                        </Text>
+                      </View>
+                    </View>
+
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        gap: 6,
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={{ color: Colors.gray }}>
+                        {format(item.date, "MM.dd.yy")}
+                      </Text>
+                      <Ionicons
+                        name="information-circle-outline"
+                        size={24}
+                        color={Colors.primary}
+                      />
+                    </View>
+                  </Animated.View>
+                </Animated.View>
+              </SwipeableRow>
             )}
             scrollEnabled={false}
             keyExtractor={(item) => item.id.toString()}
