@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import React from "react";
 
 import Colors from "@/constants/Colors";
@@ -41,7 +41,7 @@ const Layout = () => {
                   color={Colors.primary}
                 />
               </TouchableOpacity>
-              <Link href="/" asChild>
+              <Link href="/(modals)/new-chat" asChild>
                 <TouchableOpacity>
                   <Ionicons
                     name="add-circle"
@@ -52,6 +52,52 @@ const Layout = () => {
               </Link>
             </View>
           ),
+        }}
+      />
+
+      <Stack.Screen
+        name="[id]"
+        options={{
+          title: "",
+          headerBackTitleVisible: false,
+          headerRight: () => (
+            <View style={{ flexDirection: "row", gap: 30 }}>
+              <TouchableOpacity>
+                <Ionicons
+                  name="videocam-outline"
+                  color={Colors.primary}
+                  size={30}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Ionicons
+                  name="call-outline"
+                  color={Colors.primary}
+                  size={30}
+                />
+              </TouchableOpacity>
+            </View>
+          ),
+          headerTitle: () => (
+            <View
+              style={{
+                flexDirection: "row",
+                width: 220,
+                gap: 10,
+                paddingBottom: 4,
+                alignItems: "center",
+              }}
+            >
+              <Image
+                source={{ uri: "https://picsum.photos/seed/696/3000/2000" }}
+                style={{ width: 40, height: 40, borderRadius: 40 }}
+              />
+              <Text style={{ fontSize: 16, fontWeight: "500" }}>User</Text>
+            </View>
+          ),
+          headerStyle: {
+            backgroundColor: Colors.background,
+          },
         }}
       />
     </Stack>
