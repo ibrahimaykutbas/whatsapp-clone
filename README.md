@@ -9,7 +9,8 @@
 
 ## Teknoloji
 
-React Native Expo
+- React Native Expo
+- TypeScript
 
 ## Tools
 
