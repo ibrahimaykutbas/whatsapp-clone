@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react";
 
 import Colors from "@/constants/Colors";
 
-import { Stack, router, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 
 import {
   CodeField,
@@ -23,7 +23,6 @@ import {
   useSignIn,
   useSignUp,
 } from "@clerk/clerk-expo";
-import { Try } from "expo-router/build/views/Try";
 
 const CELL_COUNT = 6;
 
